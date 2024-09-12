@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS</title>
+
+    <link rel="stylesheet" href="styles/index.css">
+    
+    <!-- Leaflet JS imports -->
+    <link 
+        rel="stylesheet" 
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <script 
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="">
+    </script>
+    <!-- Leaflet JS imports -->
+    
+</head>
+<body>
+    <!-- Map Container -->
+    <div id="map" ></div>
+    
+    
+    <script>
+
+        var map = L.map('map').setView([14.6295,  121.0418], 13);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var marker = L.marker([14.6295, 121.0418]).addTo(map);
+
+        var circle = L.circle([14.6295, 121.0418], {
+            color: 'gray',
+            fillColor: '#D2E0FB',
+            fillOpacity: 0.5,
+            radius: 20
+        }).addTo(map);
+
+        var popup = L.popup()
+        .setLatLng([14.6295, 121.0418])
+        .setContent("I am a standalone popup.")
+        .openOn(map);
+
+        marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+        circle.bindPopup("I am a circle.");
+
+    </script>
+</body>
+</html>
