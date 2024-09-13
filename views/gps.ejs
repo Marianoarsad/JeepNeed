@@ -7,27 +7,62 @@
 
     <link rel="stylesheet" href="styles/index.css">
     
-    <!-- Leaflet JS imports -->
+    <!-- Leaflet css -->
     <link 
         rel="stylesheet" 
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""/>
-    <script 
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin="">
-    </script>
-    <!-- Leaflet JS imports -->
-    
+        crossorigin=""
+    />
+
+    <!-- Leaflet routing machine css -->
+    <link 
+        rel="stylesheet" 
+        href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" 
+    />
 </head>
 <body>
     <!-- Map Container -->
     <div id="map" ></div>
     
-    
+    <!-- Javascript -->
+
+    <!--Leaflet script-->
+    <script 
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="">
+    </script>
+
+    <!-- Leaflet routing machine js -->
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
     <script>
 
+        function sucess({coords}) {
+
+            var passenger = L.marker([coords.latitude, coords.longitude]).addTo(map);
+            var passengerRadius = L.circle([coords.latitude, coords.longitude], {
+                color: 'gray',
+                fillColor: '#D2E0FB',
+                fillOpacity: 0.5,
+                radius: 30
+            }).addTo(map);
+        }
+
+        function error (error) {
+            throw new Error('Your browser is not compatible.');
+        }
+
+        navigator.geolocation.watchPosition(sucess, error);    
+        
+        // Jeepney Icon
+        var jeepneyIcon = L.icon({
+            iconUrl: "images/jeepney-icon.png",
+            iconSize: [25, 25]
+        })
+
+        // Leaflet Map
         var map = L.map('map').setView([14.6295,  121.0418], 13);
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -35,23 +70,54 @@
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
-        var marker = L.marker([14.6295, 121.0418]).addTo(map);
+        // Jeepney routes
+        var ciitToAteneo = L.marker([14.6295, 121.0418], { icon: jeepneyIcon }).addTo(map);
+        var pupToCubao = L.marker([14.5995, 121.0122], { icon: jeepneyIcon }).addTo(map);
 
-        var circle = L.circle([14.6295, 121.0418], {
+        // Passenger Circle
+        /*
+        var circle = L.circle([14.6295, 121.0220], {
             color: 'gray',
             fillColor: '#D2E0FB',
             fillOpacity: 0.5,
-            radius: 20
+            radius: 15
         }).addTo(map);
+        */
 
-        var popup = L.popup()
-        .setLatLng([14.6295, 121.0418])
-        .setContent("I am a standalone popup.")
-        .openOn(map);
+        // Popups
+        //marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+        //circle.bindPopup("I am infont of CIIT Campus.");
 
-        marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-        circle.bindPopup("I am a circle.");
+        // CIIT to Ateneo
+        L.Routing.control({
+        waypoints: [
+            L.latLng(14.6215, 121.0418),
+            L.latLng(14.6396, 121.0786)
+        ]
+        }).on('routesfound',  (e) => {
+            
+            for (let coord of e.routes[0].coordinates) {
+                ciitToAteneo.setLatLng([coord.lat, coord.lng]);
+            }
+        })
+        
+        .addTo(map);
 
+        // PUP to Gateway Cubao
+        L.Routing.control({
+        waypoints: [
+            L.latLng(14.5995, 121.0122),
+            L.latLng(14.6218, 121.0528)
+        ]
+        }).on('routesfound', (e) => {
+
+            e.routes[0].coordinates.forEach( (coord, index) => {
+                setTimeout( () => {
+                    pupToCubao.setLatLng([coord.lat, coord.lng])
+                },  900 * index);
+            });
+        }).addTo(map);
+        
     </script>
 </body>
 </html>
