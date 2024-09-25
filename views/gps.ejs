@@ -73,6 +73,7 @@
         // Jeepney routes
         var ciitToAteneo = L.marker([14.6295, 121.0418], { icon: jeepneyIcon }).addTo(map);
         var pupToCubao = L.marker([14.5995, 121.0122], { icon: jeepneyIcon }).addTo(map);
+        var agoraToCubao = L.marker([14.605453211162146, 121.02315108580383], { icon: jeepneyIcon }).addTo(map);
 
         // Passenger Circle
         /*
@@ -94,11 +95,36 @@
             L.latLng(14.6215, 121.0418),
             L.latLng(14.6396, 121.0786)
         ]
-        }).on('routesfound',  (e) => {
-            
-            for (let coord of e.routes[0].coordinates) {
-                ciitToAteneo.setLatLng([coord.lat, coord.lng]);
+        }).on('routesfound', (e) => {
+
+            let coordinates = [...e.routes[0].coordinates];
+            let origin = e.routes[0].coordinates[0];
+
+            console.log(origin);
+
+            function setPosition (marker, {lat, lng}, i, coordinates) {
+
+                setTimeout( function () {
+                    marker.setLatLng([lat, lng]);
+
+                    if (i === coordinates.length - 1 ) {
+                        console.log('*** Jeepney has arrived to the destination! ***');
+
+                    }
+
+                }, 50 * i);
+                
             }
+
+            for (let i = 0; i < coordinates.length; i++) {
+
+                setPosition(ciitToAteneo, coordinates[i], i, coordinates);
+
+            }
+            
+            console.log('*** Jeepney has departed ***');
+            console.log(coordinates.reverse());
+
         })
         
         .addTo(map);
@@ -117,7 +143,26 @@
                 },  900 * index);
             });
         }).addTo(map);
+
+        // Puregold agora to cubao terminal
         
+        L.Routing.control({
+            waypoints: [
+                L.latLng(14.6054, 121.0231),
+                L.latLng(14.6203, 121.0556)
+            ]
+        }).on('routesfound', (e) => {
+
+            e.routes[0].coordinates.forEach( (coord, index) => {
+                setTimeout( () => {
+                    agoraToCubao.setLatLng([coord.lat, coord.lng]);
+                }, 900 * index);
+            })
+        }).addTo(map);
+
+       
     </script>
 </body>
 </html>
+
+<!-- TODO: Make jeepneys go back to origin. -->
