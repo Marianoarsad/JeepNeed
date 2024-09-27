@@ -38,23 +38,36 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
+        console.log('*** APP WORKING ***');
 
-        function sucess({coords}) {
+        function sucess() {
 
-            var passenger = L.marker([coords.latitude, coords.longitude]).addTo(map);
-            var passengerRadius = L.circle([coords.latitude, coords.longitude], {
+            // Passenger Icon
+            var passengerIcon = L.icon({
+                iconUrl: "images/person-icon.png",
+                iconSize: [35, 35]
+            })
+
+            var passenger = L.marker([14.6295,  121.0418], {icon: passengerIcon}).addTo(map);
+
+            var passengerRadius = L.circle([14.6295,  121.0418], {
                 color: 'gray',
                 fillColor: '#D2E0FB',
                 fillOpacity: 0.5,
                 radius: 30
             }).addTo(map);
+        
+            passengerRadius.bindPopup("I am infont of CIIT Campus.");
+
         }
 
+        // Error Handler
         function error (error) {
             throw new Error('Your browser is not compatible.');
         }
 
-        navigator.geolocation.watchPosition(sucess, error);    
+        // Map Initialize
+        navigator.geolocation.watchPosition(sucess, error);
         
         // Jeepney Icon
         var jeepneyIcon = L.icon({
@@ -62,8 +75,10 @@
             iconSize: [25, 25]
         })
 
+        
+
         // Leaflet Map
-        var map = L.map('map').setView([14.6295,  121.0418], 13);
+        var map = L.map('map', {zoomControl: false}).setView([14.6295,  121.0418], 30);
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -71,23 +86,8 @@
         }).addTo(map);
 
         // Jeepney routes
-        var ciitToAteneo = L.marker([14.6295, 121.0418], { icon: jeepneyIcon }).addTo(map);
-        var pupToCubao = L.marker([14.5995, 121.0122], { icon: jeepneyIcon }).addTo(map);
-        var agoraToCubao = L.marker([14.605453211162146, 121.02315108580383], { icon: jeepneyIcon }).addTo(map);
-
-        // Passenger Circle
-        /*
-        var circle = L.circle([14.6295, 121.0220], {
-            color: 'gray',
-            fillColor: '#D2E0FB',
-            fillOpacity: 0.5,
-            radius: 15
-        }).addTo(map);
-        */
-
-        // Popups
-        //marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-        //circle.bindPopup("I am infont of CIIT Campus.");
+        var ciitToAteneo = L.marker([14.6295, 121.0418], { icon: jeepneyIcon }).addTo(map); // Jeepney Marker
+        ciitToAteneo.bindPopup(`<b>Capacity (4/12)</b><button>Get ride.</button>`); // Popup
 
         // CIIT to Ateneo
         L.Routing.control({
@@ -107,12 +107,14 @@
                 setTimeout( function () {
                     marker.setLatLng([lat, lng]);
 
+                    console.log({lat, lng});
+
                     if (i === coordinates.length - 1 ) {
                         console.log('*** Jeepney has arrived to the destination! ***');
 
                     }
 
-                }, 50 * i);
+                }, 900 * i);
                 
             }
 
@@ -121,45 +123,8 @@
                 setPosition(ciitToAteneo, coordinates[i], i, coordinates);
 
             }
-            
-            console.log('*** Jeepney has departed ***');
-            console.log(coordinates.reverse());
 
-        })
-        
-        .addTo(map);
-
-        // PUP to Gateway Cubao
-        L.Routing.control({
-        waypoints: [
-            L.latLng(14.5995, 121.0122),
-            L.latLng(14.6218, 121.0528)
-        ]
-        }).on('routesfound', (e) => {
-
-            e.routes[0].coordinates.forEach( (coord, index) => {
-                setTimeout( () => {
-                    pupToCubao.setLatLng([coord.lat, coord.lng])
-                },  900 * index);
-            });
         }).addTo(map);
-
-        // Puregold agora to cubao terminal
-        
-        L.Routing.control({
-            waypoints: [
-                L.latLng(14.6054, 121.0231),
-                L.latLng(14.6203, 121.0556)
-            ]
-        }).on('routesfound', (e) => {
-
-            e.routes[0].coordinates.forEach( (coord, index) => {
-                setTimeout( () => {
-                    agoraToCubao.setLatLng([coord.lat, coord.lng]);
-                }, 900 * index);
-            })
-        }).addTo(map);
-
        
     </script>
 </body>
