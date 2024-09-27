@@ -38,11 +38,10 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        console.log('*** APP WORKING ***');
 
         function sucess() {
-
-            // Passenger Icon
+            
+            // PASSENGER ICON
             var passengerIcon = L.icon({
                 iconUrl: "images/person-icon.png",
                 iconSize: [35, 35]
@@ -50,10 +49,11 @@
 
             var passenger = L.marker([14.6295,  121.0418], {icon: passengerIcon}).addTo(map);
 
+            // PASSENGER CIRCLE
             var passengerRadius = L.circle([14.6295,  121.0418], {
-                color: 'gray',
-                fillColor: '#D2E0FB',
-                fillOpacity: 0.5,
+                stroke: false,
+                fillColor: '#FAA300',
+                fillOpacity: 0.06,
                 radius: 30
             }).addTo(map);
         
@@ -68,47 +68,95 @@
 
         // Map Initialize
         navigator.geolocation.watchPosition(sucess, error);
-        
-        // Jeepney Icon
-        var jeepneyIcon = L.icon({
+
+        // JEEPNEY ICON 🚚
+        const jeepneyIcon = L.icon({
             iconUrl: "images/jeepney-icon.png",
-            iconSize: [25, 25]
+            iconSize: [35, 35],
         })
 
-        
+        // ORIGIN ICON 📍
+        const originIcon = L.icon({
+            iconUrl: "images/origin-icon.png",
+            iconSize: [40, 40]
+        })
 
-        // Leaflet Map
-        var map = L.map('map', {zoomControl: false}).setView([14.6295,  121.0418], 30);
+        // DESTINATION ICON 📍
+        const destinationIcon = L.icon({
+            iconUrl: "images/destination-icon.png",
+            iconSize: [40, 40]
+        })
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        // MAP LAYER 🗺️
+        var map = L.map('map', {
+            zoomControl: false
+        }).setView([
+            14.6295,  
+            121.0418
+        ], 20);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+            maxZoom: 20,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         }).addTo(map);
 
         // Jeepney routes
         var ciitToAteneo = L.marker([14.6295, 121.0418], { icon: jeepneyIcon }).addTo(map); // Jeepney Marker
-        ciitToAteneo.bindPopup(`<b>Capacity (4/12)</b><button>Get ride.</button>`); // Popup
+        ciitToAteneo.bindPopup(`<b>aklsndklasndklasndlnasdklnaskldnklasndklalsndklnasdlnaskldnklasndklanskdlnaskldnlasndlansldk</b><button>Get ride.</button>`); // Popup
 
-        // CIIT to Ateneo
+        // ROUTES
         L.Routing.control({
-        waypoints: [
-            L.latLng(14.6215, 121.0418),
-            L.latLng(14.6396, 121.0786)
-        ]
+            waypoints: [
+                null
+            ],
+            plan: L.Routing.plan([
+                // PROJECT 2-3
+                L.latLng(14.633032939049171, 121.01702489256556),
+                L.latLng(14.636197737903148, 121.02919736200919),
+                L.latLng(14.627772665780878, 121.03539908600466),
+                L.latLng(14.634152037467478, 121.05895033389389),
+                L.latLng(14.628929938956487, 121.06475481553743)
+            ], {
+                // ORIGIN - DESTINATION ICON PLACEMENT
+                createMarker: function(i, wp, nWps) {
+
+                    console.log("i: " + i);
+                    console.log("wp: " + JSON.stringify(wp));
+                    console.log("nWps: " + nWps);
+
+                    if (i === 0) {
+                        return L.marker(wp.latLng, {icon: originIcon });
+                    }
+
+                    if (i === 4) {
+                        return L.marker(wp.latLng, {icon: destinationIcon });
+                    } 
+                }
+            }),
+            // LINE PATH
+            lineOptions: {
+                addWaypoints: false,
+                styles: [{ color: '#59D5E0', 
+                opacity: 0.8, 
+                weight: 5 
+                }]
+            },
         }).on('routesfound', (e) => {
+            const distance = e.routes[0].summary.totalDistance;
+            const time = e.routes[0].summary.totalTime;
+
+            console.log("\nTotal Distance: " + distance);
+            console.log("Total Time: " + time + "\n");
 
             let coordinates = [...e.routes[0].coordinates];
-            let origin = e.routes[0].coordinates[0];
 
-            console.log(origin);
-
-            function setPosition (marker, {lat, lng}, i, coordinates) {
+            function setPosition (jeep, {lat, lng}, i, coordinates) {
 
                 setTimeout( function () {
-                    marker.setLatLng([lat, lng]);
 
-                    console.log({lat, lng});
+                    jeep.setLatLng([lat, lng]);
 
+                    // ARRIVED CONDITION
                     if (i === coordinates.length - 1 ) {
                         console.log('*** Jeepney has arrived to the destination! ***');
 
@@ -130,4 +178,6 @@
 </body>
 </html>
 
-<!-- TODO: Make jeepneys go back to origin. -->
+<!-- TODO: MAKE JEEPNEY STOP WHEN PASSENGER IS NEAR. -->
+
+<!-- TODO: MAKE JEEPNEY GO BACK TO ORIGIN. -->
