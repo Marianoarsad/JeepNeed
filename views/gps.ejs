@@ -37,15 +37,15 @@
     <!-- Leaflet routing machine js -->
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
-    <script>
+    <script> 
 
-        function sucess() {
+        function success() {
             
             // PASSENGER ICON
             var passengerIcon = L.icon({
                 iconUrl: "images/person-icon.png",
                 iconSize: [35, 35]
-            })
+            });
 
             var passenger = L.marker([14.6295,  121.0418], {icon: passengerIcon}).addTo(map);
 
@@ -67,25 +67,25 @@
         }
 
         // Map Initialize
-        navigator.geolocation.watchPosition(sucess, error);
+        navigator.geolocation.watchPosition(success, error);
 
         // JEEPNEY ICON 🚚
         const jeepneyIcon = L.icon({
             iconUrl: "images/jeepney-icon.png",
             iconSize: [35, 35],
-        })
+        });
 
         // ORIGIN ICON 📍
         const originIcon = L.icon({
             iconUrl: "images/origin-icon.png",
             iconSize: [40, 40]
-        })
+        });
 
         // DESTINATION ICON 📍
         const destinationIcon = L.icon({
             iconUrl: "images/destination-icon.png",
             iconSize: [40, 40]
-        })
+        });
 
         // MAP LAYER 🗺️
         var map = L.map('map', {
@@ -101,9 +101,8 @@
         }).addTo(map);
 
         // Jeepney routes
-        var ciitToAteneo = L.marker([14.6295, 121.0418], { icon: jeepneyIcon }).addTo(map); // Jeepney Marker
-        ciitToAteneo.bindPopup(`<b>aklsndklasndklasndlnasdklnaskldnklasndklalsndklnasdlnaskldnklasndklanskdlnaskldnlasndlansldk</b><button>Get ride.</button>`); // Popup
-
+        var proj23 = L.marker([14.632945071026535, 121.01690331131708], { icon: jeepneyIcon }).addTo(map); // Jeepney Marker
+            
         // ROUTES
         L.Routing.control({
             waypoints: [
@@ -133,7 +132,7 @@
                     } 
                 }
             }),
-            // LINE PATH
+            // LINE PATH CONFIGURATIONS
             lineOptions: {
                 addWaypoints: false,
                 styles: [{ color: '#59D5E0', 
@@ -142,11 +141,6 @@
                 }]
             },
         }).on('routesfound', (e) => {
-            const distance = e.routes[0].summary.totalDistance;
-            const time = e.routes[0].summary.totalTime;
-
-            console.log("\nTotal Distance: " + distance);
-            console.log("Total Time: " + time + "\n");
 
             let coordinates = [...e.routes[0].coordinates];
 
@@ -159,24 +153,45 @@
                     // ARRIVED CONDITION
                     if (i === coordinates.length - 1 ) {
                         console.log('*** Jeepney has arrived to the destination! ***');
-
                     }
 
                 }, 900 * i);
                 
             }
 
-            for (let i = 0; i < coordinates.length; i++) {
+            let passengerCtr = 0;
+            let popupContent = `
+                <p>Sakay na!</p><br>
+                <button id="btn">Ride.</button> </p>
+            `
+            proj23.bindPopup(popupContent);
+            proj23.on('popupopen', function() {
+            document.getElementById("btn").addEventListener('click', function () {
+                passengerCtr++;
+                console.log(passengerCtr);
 
-                setPosition(ciitToAteneo, coordinates[i], i, coordinates);
+                if (passengerCtr >= 16) {
 
-            }
+                    console.log("*** Jeepney has departed! ***");
 
+                    for (let i = 0; i < coordinates.length; i++) {
+
+                        setPosition(proj23, coordinates[i], i, coordinates);
+
+                    }
+                }
+            });
+            })
+             
         }).addTo(map);
-       
+    
     </script>
 </body>
 </html>
+
+<!-- TODO: CREATE JEEPNEY COUNTER. -->
+
+<!-- TODO: IMPROVE JEEPNEY POPUP DESIGN. -->
 
 <!-- TODO: MAKE JEEPNEY STOP WHEN PASSENGER IS NEAR. -->
 
