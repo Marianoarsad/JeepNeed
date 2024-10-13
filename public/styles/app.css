@@ -19,3 +19,15 @@ div.leaflet-top.leaflet-right {
     width: 0px  !important;
     height: 0px  !important; 
 }
+
+.jeepneyPopup {
+    
+}
+
+.jeepneyPopup button {
+    color: white;
+    background-color: #f8df8c;
+    padding: 5px;
+    border-radius: 5px;
+    min-width: 160px;
+}
