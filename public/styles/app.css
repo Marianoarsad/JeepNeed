@@ -18,7 +18,7 @@ body {
 
 #textMsg {
     position: absolute;
-    
+    top: -110px;
 
     display: flex;
     justify-content: center;
@@ -129,4 +129,22 @@ div.leaflet-top.leaflet-right {
     padding: 5px;
     border-radius: 5px;
     min-width: 160px;
+}
+
+/* ELEMENTS TO ANIMATE */
+.smsNotif {
+    animation-name: smsForwardAnimation;
+    animation-duration : 2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 2;
+    animation-direction: alternate;
+}
+
+/* @KEYFRAMES */
+
+@keyframes smsForwardAnimation {
+    0% { transform: translateY(-110px) }
+    50% { transform: translateY(120px) }
+    100% { transform: translateY(120px) }
+    100% { transform: translateY(120px) }
 }
